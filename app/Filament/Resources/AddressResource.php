@@ -129,4 +129,9 @@ class AddressResource extends Resource
             'edit' => Pages\EditAddress::route('/{record}/edit'),
         ];
     }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 }

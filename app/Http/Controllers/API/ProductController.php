@@ -14,15 +14,11 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $products = Product::with('productType')->get()->map(function ($product) {
-                // Menambahkan base URL ke gambar
-                $product->image = $product->image ? URL::to('/storage/' . $product->image) : null;
-                return $product;
-            });
+            $products = Product::with('productType')->get();
 
             return new JsonResponses(Response::HTTP_OK, 'Semua produk berhasil didapatkan!', $products);
         } catch (\Exception $e) {
-            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
         }
     }
 }

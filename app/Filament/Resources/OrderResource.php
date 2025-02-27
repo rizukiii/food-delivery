@@ -117,40 +117,26 @@ class OrderResource extends Resource
             TextColumn::make('order_status')
                 ->sortable(),
 
-            TextColumn::make('schedule_at')
-                ->label('Scheduled At')
-                ->dateTime()
-                ->sortable(),
-
-            BooleanColumn::make('refund_requested')
-                ->label('Refund Requested'),
-
-            BooleanColumn::make('refunded')
-                ->label('Refunded'),
-
-            BooleanColumn::make('scheduled')
-                ->label('Scheduled'),
-
             TextColumn::make('created_at')
                 ->label('Created At')
                 ->dateTime()
                 ->sortable(),
         ])
-        ->filters([
-            //
-        ])
-        ->actions([
-            Tables\Actions\ActionGroup::make([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->filters([
+                //
             ])
-        ])
-        ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]),
-        ]);
+            ->actions([
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getRelations(): array
@@ -164,8 +150,12 @@ class OrderResource extends Resource
     {
         return [
             'index' => Pages\ListOrders::route('/'),
-            'create' => Pages\CreateOrder::route('/create'),
             'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 }

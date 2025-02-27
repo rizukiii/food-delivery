@@ -83,11 +83,6 @@ class CartResource extends Resource
                 ->label('Product Image')
                 ->square(),
 
-            TextColumn::make('time')
-                ->label('Added Time')
-                ->dateTime()
-                ->sortable(),
-
             BooleanColumn::make('is_exist')
                 ->label('Is Exist'),
         ])
@@ -95,11 +90,7 @@ class CartResource extends Resource
             //
         ])
         ->actions([
-            Tables\Actions\ActionGroup::make([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
+            //
         ])
         ->bulkActions([
             Tables\Actions\BulkActionGroup::make([
@@ -123,4 +114,10 @@ class CartResource extends Resource
             'edit' => Pages\EditCart::route('/{record}/edit'),
         ];
     }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+   
 }

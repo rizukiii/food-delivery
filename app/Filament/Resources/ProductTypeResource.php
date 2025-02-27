@@ -67,7 +67,6 @@ class ProductTypeResource extends Resource
     {
         return [
             'index' => Pages\ListProductTypes::route('/'),
-            'create' => Pages\CreateProductType::route('/create'),
             'edit' => Pages\EditProductType::route('/{record}/edit'),
         ];
     }

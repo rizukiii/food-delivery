@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Filament\Resources;
 
@@ -109,5 +109,10 @@ class OrderDetailResource extends Resource
             'create' => Pages\CreateOrderDetail::route('/create'),
             'edit' => Pages\EditOrderDetail::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 }
