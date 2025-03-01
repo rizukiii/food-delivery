@@ -11,10 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('f_name');
-            $table->string('name');
-        });
+        Schema::dropIfExists('payments');
     }
 
     /**

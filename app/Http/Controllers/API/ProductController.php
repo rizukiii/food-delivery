@@ -18,7 +18,7 @@ class ProductController extends Controller
 
             return new JsonResponses(Response::HTTP_OK, 'Semua produk berhasil didapatkan!', $products);
         } catch (\Exception $e) {
-            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
         }
     }
 }

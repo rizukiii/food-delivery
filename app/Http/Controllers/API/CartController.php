@@ -38,7 +38,7 @@ class CartController extends Controller
 
             return new JsonResponses(Response::HTTP_OK, 'Item added to cart', $cart);
         } catch (Exception $e) {
-            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
         }
     }
 
@@ -46,10 +46,10 @@ class CartController extends Controller
     {
         try {
             $cart = Cart::where('user_id', Auth::id())->with('product')->get();
-        
+
             return new JsonResponses(Response::HTTP_OK, 'Cart fetched successfully', $cart);
         } catch (Exception $e) {
-            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
         }
     }
 
@@ -60,9 +60,9 @@ class CartController extends Controller
 
             $cartItem->delete();
 
-            return new JsonResponses(Response::HTTP_OK, 'Item removed from cart', null);
+            return new JsonResponses(Response::HTTP_OK, 'Item removed from cart', []);
         } catch (Exception $e) {
-            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
         }
     }
 }

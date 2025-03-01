@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('name')->after('id'); // Tambahkan lagi di posisi baru
-        });
+        Schema::dropIfExists('payments');
     }
-
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        //
+        Schema::table('payments', function (Blueprint $table) {
+            //
+        });
     }
 };

@@ -36,7 +36,7 @@ class AuthController extends Controller
 
             return new JsonResponses(Response::HTTP_CREATED, 'User registered successfully!', $user, ['token' => $token]);
         } catch (\Exception $e) {
-            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
         }
     }
 
@@ -55,7 +55,7 @@ class AuthController extends Controller
 
             // Jika user tidak ditemukan atau password salah
             if (!$user || !Hash::check($request->password, $user->password)) {
-                return new JsonResponses(Response::HTTP_OK, 'Invalid credentials', null);
+                return new JsonResponses(Response::HTTP_BAD_REQUEST, 'Invalid credentials', []);
             }
 
             // Generate token untuk autentikasi
@@ -63,7 +63,7 @@ class AuthController extends Controller
 
             return new JsonResponses(Response::HTTP_OK, 'Login successful!', $user, ['token' => $token]);
         } catch (\Exception $e) {
-            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
         }
     }
 
@@ -73,9 +73,9 @@ class AuthController extends Controller
         try {
             $request->user()->tokens()->delete();
 
-            return new JsonResponses(Response::HTTP_OK, 'Logged out successfully', null);
+            return new JsonResponses(Response::HTTP_OK, 'Logged out successfully', []);
         } catch (\Exception $e) {
-            return new JsonResponses(Response::HTTP_OK, 'Something went wrong', null, ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
         }
     }
 }
