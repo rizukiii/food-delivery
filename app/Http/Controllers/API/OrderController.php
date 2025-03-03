@@ -58,6 +58,8 @@ class OrderController extends Controller
             ]);
 
             foreach ($cartItems as $item) {
+                $item->product->reduceStock($item->quantity);
+
                 OrderDetail::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
@@ -91,7 +93,25 @@ class OrderController extends Controller
 
             return new JsonResponses(Response::HTTP_OK, 'Orders retrieved successfully', $orders);
         } catch (\Exception $e) {
-            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', ['error' => $e->getMessage()]);
+        }
+    }
+
+    public function cancelOrders($id)
+    {
+        try {
+            $order = Order::with('details.product')->findOrFail($id);
+
+            // Kembalikan stok setiap produk dalam pesanan
+            foreach ($order->details as $detail) {
+                $detail->product->increaseStock($detail->quantity);
+            }
+            $order->update(['order_status' => 'cancelled' ]);
+            $order->save();
+
+            return new JsonResponses(Response::HTTP_OK,"Order berhasil di cancel!", []);
+        } catch (\Exception $e) {
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR,"Ada kesalahan!", ['error' => $e->getMessage()]);
         }
     }
 }

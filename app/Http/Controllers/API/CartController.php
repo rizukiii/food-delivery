@@ -22,34 +22,68 @@ class CartController extends Controller
                 'quantity' => 'required|integer|min:1',
                 'is_exist' => 'required|boolean',
             ]);
-
+            // ambil product berdasar user
             $product = Product::find($request->product_id);
+            // ambil foto produk yang pertama
             $image_product = is_array($product->image) ? $product->image[0] : null;
+            // cari cart berdasar user dan product nya bedasar id
+            $cart = Cart::where('user_id', auth()->id())->where('product_id', $product->id)->first();
 
-            $cart = Cart::updateOrCreate(
-                ['user_id' => auth()->id(), 'product_id' => $product->id], // Kondisi pencarian
-                [
+            // jika ada product maka update
+            if ($cart) {
+                if ($request->quantity > $product->quantity) {
+                    return new JsonResponses(Response::HTTP_BAD_REQUEST, 'Stock tidak mencukupi!', []);
+                }
+
+                $cart->update([
                     'quantity' => $request->quantity,
                     'price' => $product->price * $request->quantity,
                     'image' => $image_product,
                     'is_exist' => $request->is_exist,
-                ] // Data yang akan diperbarui atau dibuat
-            );
+                ]);
+                $cart->save();
+            } else {
+                // jika item belum ada di cart buat baru
+                if ($request->quantity > $product->quantity) {
+                    return new JsonResponses(Response::HTTP_BAD_REQUEST, 'Stock tidak mencukupi!', []);
+                }
 
-            return new JsonResponses(Response::HTTP_OK, 'Item added to cart', $cart);
+                $cart = Cart::create([
+                    'user_id' => auth()->id(),
+                    'product_id' => $product->id,
+                    'quantity' => $request->quantity,
+                    'price' => $product->price * $request->quantity,
+                    'image' => $image_product,
+                    'is_exist' => $request->is_exist
+                ]);
+            }
+            return new JsonResponses(Response::HTTP_OK, 'Item added/updated to cart', $cart);
         } catch (Exception $e) {
-            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong',  ['error' => $e->getMessage()]);
         }
     }
 
-    public function getCart()
+    public function getCart(Request $request)
     {
         try {
-            $cart = Cart::where('user_id', Auth::id())->with('product')->get();
+            $show_only_selected = $request->query('selected', false);
 
-            return new JsonResponses(Response::HTTP_OK, 'Cart fetched successfully', $cart);
+            $cart_query = Cart::where('user_id', auth()->id())->with('product');
+
+            if ($show_only_selected) {
+                $cart_query->where('is_exists', true);
+            }
+
+            $cart = $cart_query->get();
+
+            $total_price = $cart->where('is_exist', true)->sum('price');
+
+            return new JsonResponses(Response::HTTP_OK, 'Cart fetched successfully', [
+                'item' => $cart,
+                'total_price' => $total_price,
+            ]);
         } catch (Exception $e) {
-            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong',  ['error' => $e->getMessage()]);
         }
     }
 
@@ -58,11 +92,15 @@ class CartController extends Controller
         try {
             $cartItem = Cart::where('user_id', Auth::id())->where('id', $id)->first();
 
+            if(!$cartItem){
+                return new JsonResponses(Response::HTTP_NOT_FOUND, 'Data tidak ada!', []);
+            }
+
             $cartItem->delete();
 
-            return new JsonResponses(Response::HTTP_OK, 'Item removed from cart', []);
+            return new JsonResponses(Response::HTTP_OK, 'Data item berhasil dihapus!', []);
         } catch (Exception $e) {
-            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', [], ['error' => $e->getMessage()]);
+            return new JsonResponses(Response::HTTP_INTERNAL_SERVER_ERROR, 'Something went wrong', ['error' => $e->getMessage()]);
         }
     }
 }

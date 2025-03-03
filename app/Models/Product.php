@@ -13,7 +13,7 @@ class Product extends Model
         'name',
         'description',
         'price',
-        'stars',
+        'stock',
         'image',
         'location',
         'type_id'
@@ -22,6 +22,21 @@ class Product extends Model
     protected $casts = [
         'image' => 'array'
     ];
+
+    public function reduceStock(int $quantity){
+        if($this->stock < $quantity){
+            throw new \Exception('Stock tidak cukup!');
+        }
+
+        $this->stock -= $quantity;
+        $this->save();
+    }
+
+    public function increaseStock(int $quantity){
+        if($quantity > 0){
+            $this->increment('quantity',$quantity);
+        }
+    }
 
     public function productType()
     {

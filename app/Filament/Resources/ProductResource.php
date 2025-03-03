@@ -51,9 +51,8 @@ class ProductResource extends Resource
                         ->required()
                         ->prefix('RP'),
 
-                    TextInput::make('stars')
+                    TextInput::make('stock')
                         ->numeric()
-                        ->step(0.1)
                         ->required(),
                 ]),
 
@@ -80,7 +79,7 @@ class ProductResource extends Resource
             TextColumn::make('name')->searchable(),
             TextColumn::make('productType.name')->label('Type')->sortable(),
             TextColumn::make('price')->money('IDR')->sortable(),
-            TextColumn::make('stars')->sortable(),
+            TextColumn::make('stock')->sortable(),
             TextColumn::make('location')->sortable(),
             TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
         ])
