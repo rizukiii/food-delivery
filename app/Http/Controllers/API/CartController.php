@@ -31,7 +31,7 @@ class CartController extends Controller
 
             // jika ada product maka update
             if ($cart) {
-                if ($request->quantity > $product->quantity) {
+                if ($request->quantity > $product->stock) {
                     return new JsonResponses(Response::HTTP_BAD_REQUEST, 'Stock tidak mencukupi!', []);
                 }
 
@@ -44,7 +44,7 @@ class CartController extends Controller
                 $cart->save();
             } else {
                 // jika item belum ada di cart buat baru
-                if ($request->quantity > $product->quantity) {
+                if ($request->quantity > $product->stock) {
                     return new JsonResponses(Response::HTTP_BAD_REQUEST, 'Stock tidak mencukupi!', []);
                 }
 
