@@ -31,13 +31,17 @@ class CartController extends Controller
 
             // jika ada product maka update
             if ($cart) {
-                if ($request->quantity > $product->quantity) {
+                // Menghitung total quantity jika ditambahkan
+                $newQuantity = $request->is_exist ? $cart->quantity + $request->quantity : $request->quantity;
+
+                if ($newQuantity > $product->quantity) {
                     return new JsonResponses(Response::HTTP_BAD_REQUEST, 'Stock tidak mencukupi!', []);
                 }
 
+                // Update quantity, harga, dan is_exist
                 $cart->update([
-                    'quantity' => $request->quantity,
-                    'price' => $product->price * $request->quantity,
+                    'quantity' => $newQuantity,
+                    'price' => $product->price * $newQuantity,
                     'image' => $image_product,
                     'is_exist' => $request->is_exist,
                 ]);
@@ -92,7 +96,7 @@ class CartController extends Controller
         try {
             $cartItem = Cart::where('user_id', Auth::id())->where('id', $id)->first();
 
-            if(!$cartItem){
+            if (!$cartItem) {
                 return new JsonResponses(Response::HTTP_NOT_FOUND, 'Data tidak ada!', []);
             }
 
